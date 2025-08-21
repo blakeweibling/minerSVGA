@@ -5,64 +5,121 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-    color: #333;
+    font-family: 'Courier New', monospace;
+    background: #000;
+    color: #fff;
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
 }
 
 #game-container {
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-    overflow: hidden;
-    max-width: 1000px;
+    background: #000;
+    border: 2px solid #00ffff;
+    max-width: 1024px;
     width: 100%;
+    height: 600px;
 }
 
 #game-header {
-    background: linear-gradient(90deg, #2c3e50, #34495e);
-    color: white;
-    padding: 20px;
+    background: #000;
+    color: #00ffff;
+    padding: 10px;
     text-align: center;
+    border-bottom: 2px solid #00ffff;
 }
 
 #game-header h1 {
-    font-size: 2.5em;
-    margin-bottom: 15px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-#status-bar {
-    display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap;
-    gap: 20px;
-    font-size: 1.1em;
-    font-weight: 600;
-}
-
-#status-bar span {
-    background: rgba(255, 255, 255, 0.1);
-    padding: 8px 16px;
-    border-radius: 20px;
-    backdrop-filter: blur(10px);
+    font-size: 2em;
+    font-weight: bold;
+    text-transform: uppercase;
 }
 
 #game-area {
-    position: relative;
     display: flex;
-    flex-direction: column;
+    height: 520px;
+}
+
+#game-left {
+    flex: 1;
+    background: #000;
+    border-right: 2px solid #00ffff;
+}
+
+#game-right {
+    width: 200px;
+    background: #000;
+    border-left: 2px solid #00ffff;
 }
 
 #game-canvas {
-    border: 2px solid #34495e;
+    border: none;
     background: #000;
     display: block;
-    margin: 0 auto;
+    width: 100%;
+    height: 100%;
+}
+
+#status-panel {
+    padding: 10px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.status-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    border-bottom: 1px solid #333;
+}
+
+.status-label {
+    color: #fff;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.status-value {
+    color: #00ffff;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.messages-area {
+    min-height: 120px;
+    max-height: 120px;
+    overflow-y: auto;
+    border: 1px solid #333;
+    background: #000;
+    padding: 5px;
+}
+
+.message {
+    color: #ff0000;
+    font-size: 12px;
+    margin-bottom: 2px;
+    line-height: 1.2;
+}
+
+.equipment-area {
+    min-height: 80px;
+    max-height: 80px;
+    overflow-y: auto;
+    border: 1px solid #333;
+    background: #000;
+    padding: 5px;
+}
+
+.equipment-item {
+    color: #fff;
+    font-size: 12px;
+    margin-bottom: 2px;
+    line-height: 1.2;
 }
 
 #ui-overlay {
@@ -72,6 +129,7 @@ body {
     right: 0;
     bottom: 0;
     pointer-events: none;
+    z-index: 100;
 }
 
 .ui-panel {
@@ -79,20 +137,21 @@ body {
     top: 50px;
     left: 50px;
     right: 50px;
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.95);
+    border: 2px solid #00ffff;
     padding: 30px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     pointer-events: auto;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+    color: #fff;
 }
 
 .ui-panel h2 {
-    color: #2c3e50;
+    color: #00ffff;
     margin-bottom: 20px;
     font-size: 1.8em;
     text-align: center;
+    text-transform: uppercase;
 }
 
 .building-buttons {
@@ -104,25 +163,25 @@ body {
 }
 
 .building-btn {
-    background: linear-gradient(135deg, #3498db, #2980b9);
-    color: white;
-    border: none;
+    background: #000;
+    color: #00ffff;
+    border: 2px solid #00ffff;
     padding: 12px 24px;
-    border-radius: 8px;
     cursor: pointer;
     font-size: 1em;
-    font-weight: 600;
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+    text-transform: uppercase;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
 }
 
 .building-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+    background: #00ffff;
+    color: #000;
 }
 
 .building-btn:active {
-    transform: translateY(0);
+    transform: scale(0.95);
 }
 
 .equipment-grid {
@@ -133,57 +192,94 @@ body {
 }
 
 .equipment-item {
-    background: #f8f9fa;
-    border: 2px solid #e9ecef;
-    border-radius: 8px;
+    background: #000;
+    border: 2px solid #00ffff;
     padding: 15px;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
     gap: 5px;
+    color: #fff;
 }
 
 .equipment-item:hover {
-    border-color: #3498db;
-    background: #e3f2fd;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.2);
+    background: #00ffff;
+    color: #000;
 }
 
 .equipment-item.owned {
-    background: #d4edda;
-    border-color: #28a745;
+    background: #008000;
+    border-color: #00ff00;
+    color: #fff;
 }
 
 .equipment-name {
-    font-weight: 600;
-    color: #2c3e50;
+    font-weight: bold;
+    color: inherit;
     font-size: 1.1em;
+    text-transform: uppercase;
 }
 
 .equipment-desc {
-    color: #6c757d;
+    color: inherit;
     font-size: 0.9em;
+    opacity: 0.8;
 }
 
 .controls {
     text-align: center;
-    color: #6c757d;
+    color: #00ffff;
     font-size: 0.9em;
     line-height: 1.6;
 }
 
 .mine-controls {
     text-align: center;
-    color: #6c757d;
+    color: #00ffff;
     margin-bottom: 20px;
 }
 
 .equipment-status {
     text-align: center;
-    font-weight: 600;
-    color: #2c3e50;
+    font-weight: bold;
+    color: #00ffff;
+    margin-top: 20px;
+}
+
+/* Compact mine UI */
+#mine-ui {
+    max-width: 400px;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 100px;
+    background: rgba(0, 0, 0, 0.98);
+    border: 2px solid #00ffff;
+}
+
+/* Close button for UI panels */
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: #ff0000;
+    color: white;
+    border: none;
+    width: 30px;
+    height: 30px;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    font-family: 'Courier New', monospace;
+}
+
+.close-btn:hover {
+    background: #cc0000;
+    transform: scale(1.1);
 }
 
 .game-over-buttons {
@@ -195,28 +291,20 @@ body {
 
 #restart-btn, #quit-btn {
     padding: 12px 30px;
-    border: none;
-    border-radius: 8px;
+    border: 2px solid #00ffff;
+    background: #000;
+    color: #00ffff;
     font-size: 1.1em;
-    font-weight: 600;
+    font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease;
-}
-
-#restart-btn {
-    background: linear-gradient(135deg, #27ae60, #2ecc71);
-    color: white;
-    box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
-}
-
-#quit-btn {
-    background: linear-gradient(135deg, #e74c3c, #c0392b);
-    color: white;
-    box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+    font-family: 'Courier New', monospace;
+    text-transform: uppercase;
 }
 
 #restart-btn:hover, #quit-btn:hover {
-    transform: translateY(-2px);
+    background: #00ffff;
+    color: #000;
 }
 
 .modal {
@@ -225,7 +313,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.9);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -234,23 +322,24 @@ body {
 }
 
 .modal-content {
-    background: white;
-    border-radius: 12px;
+    background: #000;
+    border: 2px solid #00ffff;
     padding: 30px;
     max-width: 500px;
     width: 90%;
     text-align: center;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    color: #fff;
 }
 
 .modal-content h3 {
-    color: #2c3e50;
+    color: #00ffff;
     margin-bottom: 15px;
     font-size: 1.5em;
+    text-transform: uppercase;
 }
 
 .modal-content p {
-    color: #6c757d;
+    color: #fff;
     margin-bottom: 20px;
     line-height: 1.6;
 }
@@ -265,36 +354,35 @@ body {
 
 #modal-buttons button {
     padding: 10px 20px;
-    border: none;
-    border-radius: 6px;
+    border: 2px solid #00ffff;
+    background: #000;
+    color: #00ffff;
     cursor: pointer;
-    font-weight: 600;
+    font-weight: bold;
     transition: all 0.3s ease;
+    font-family: 'Courier New', monospace;
+    text-transform: uppercase;
 }
 
-#modal-buttons button.primary {
-    background: #3498db;
-    color: white;
-}
-
-#modal-buttons button.secondary {
-    background: #95a5a6;
-    color: white;
+#modal-buttons button:hover {
+    background: #00ffff;
+    color: #000;
 }
 
 #modal-close {
-    background: #e74c3c;
+    background: #ff0000;
     color: white;
     border: none;
     padding: 10px 25px;
-    border-radius: 6px;
     cursor: pointer;
-    font-weight: 600;
+    font-weight: bold;
     transition: all 0.3s ease;
+    font-family: 'Courier New', monospace;
+    text-transform: uppercase;
 }
 
 #modal-close:hover {
-    background: #c0392b;
+    background: #cc0000;
 }
 
 .hidden {
@@ -305,16 +393,17 @@ body {
 @media (max-width: 768px) {
     #game-container {
         margin: 10px;
-        border-radius: 8px;
+        height: auto;
     }
     
-    #game-header h1 {
-        font-size: 2em;
-    }
-    
-    #status-bar {
+    #game-area {
         flex-direction: column;
-        gap: 10px;
+        height: auto;
+    }
+    
+    #game-right {
+        width: 100%;
+        height: 200px;
     }
     
     .ui-panel {
@@ -351,14 +440,14 @@ body {
 /* Equipment owned indicator */
 .equipment-item.owned::before {
     content: "✓ ";
-    color: #28a745;
+    color: #00ff00;
     font-weight: bold;
 }
 
 /* Ring status styling */
 #ring-status {
-    background: linear-gradient(135deg, #f39c12, #e67e22) !important;
-    color: white;
+    background: #ffff00 !important;
+    color: #000;
     font-weight: bold;
     animation: pulse 2s infinite;
 }

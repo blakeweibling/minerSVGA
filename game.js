@@ -1,6 +1,6 @@
 // Game Constants
-const SCREEN_WIDTH = 800;
-const SCREEN_HEIGHT = 600;
+const SCREEN_WIDTH = 640;
+const SCREEN_HEIGHT = 480;
 const TILE_SIZE = 16;
 const GRID_WIDTH = 39;
 const GRID_HEIGHT = 114;
@@ -157,22 +157,31 @@ class Player {
     }
 
     updateUI() {
-        document.getElementById('money').textContent = `Money: $${this.money}`;
-        document.getElementById('health').textContent = `Health: ${this.health}%`;
-        document.getElementById('minerals').textContent = `Minerals: ${Object.values(this.minerals).reduce((sum, val) => sum + val, 0)}`;
+        // Update status panel values
+        document.getElementById('money').textContent = `$ ${this.money.toLocaleString()}.00`;
+        document.getElementById('health').textContent = this.health;
+        document.getElementById('platinum-count').textContent = this.minerals.platinum;
+        document.getElementById('gold-count').textContent = this.minerals.gold;
+        document.getElementById('silver-count').textContent = this.minerals.silver;
         
-        const ringStatus = document.getElementById('ring-status');
-        if (this.has_ring) {
-            ringStatus.classList.remove('hidden');
+        // Update equipment list
+        const equipmentList = document.getElementById('equipment-list');
+        const equipmentNames = Object.keys(this.inventory);
+        if (equipmentNames.length === 0) {
+            equipmentList.innerHTML = '<div class="equipment-item">No equipment</div>';
         } else {
-            ringStatus.classList.add('hidden');
+            equipmentList.innerHTML = equipmentNames.map(item => 
+                `<div class="equipment-item">${item}</div>`
+            ).join('');
+        }
+        
+        // Update ring status in messages
+        if (this.has_ring) {
+            this.addMessage('Ring Found!');
         }
     }
 
     updateEquipmentUI() {
-        const equipmentCount = document.getElementById('equipment-count');
-        equipmentCount.textContent = `Equipment: ${Object.keys(this.inventory).length} items`;
-        
         // Update equipment items visual state
         Object.keys(Equipment).forEach(equipmentKey => {
             const equipment = Equipment[equipmentKey];
@@ -185,6 +194,22 @@ class Player {
                 }
             }
         });
+    }
+    
+    addMessage(message) {
+        const messagesArea = document.getElementById('messages');
+        const messageElement = document.createElement('div');
+        messageElement.className = 'message';
+        messageElement.textContent = message;
+        messagesArea.appendChild(messageElement);
+        
+        // Keep only last 10 messages
+        while (messagesArea.children.length > 10) {
+            messagesArea.removeChild(messagesArea.firstChild);
+        }
+        
+        // Auto-scroll to bottom
+        messagesArea.scrollTop = messagesArea.scrollHeight;
     }
 }
 
@@ -420,6 +445,10 @@ class TownManager {
     }
 
     showMessage(title, message) {
+        // Add message to the status panel
+        this.player.addMessage(message);
+        
+        // Also show modal for important messages
         const modal = document.getElementById('modal');
         const modalTitle = document.getElementById('modal-title');
         const modalMessage = document.getElementById('modal-message');
@@ -438,27 +467,147 @@ class Renderer {
     }
 
     renderTown(player) {
-        // Background
-        this.ctx.fillStyle = Colors.TOWN_BG;
-        this.ctx.fillRect(0, 0, SCREEN_WIDTH, TOWN_HEIGHT);
-
-        // Building buttons (visual representation)
-        const buildings = ['Store', 'Bank', 'Hospital', 'Saloon', 'Enter Mine'];
-        this.ctx.fillStyle = Colors.WHITE;
+        // Sky background
+        this.ctx.fillStyle = '#87CEEB'; // Light blue sky
+        this.ctx.fillRect(0, 0, SCREEN_WIDTH, 100);
+        
+        // Draw clouds
+        this.ctx.fillStyle = '#FFFFFF';
+        this.drawCloud(100, 30, 20);
+        this.drawCloud(300, 40, 15);
+        
+        // Draw birds
+        this.ctx.fillStyle = '#000000';
+        this.drawBird(150, 25);
+        this.drawBird(400, 35);
+        
+        // Ground
+        this.ctx.fillStyle = '#C0C0C0'; // Light gray ground
+        this.ctx.fillRect(0, 100, SCREEN_WIDTH, 50);
+        
+        // Draw houses
+        this.drawHouse(50, 100, '$'); // Bank
+        this.drawHouse(200, 100, '🍸'); // Saloon
+        this.drawHouse(350, 100, '🏥'); // Hospital
+        
+        // Draw elevator shaft
+        this.drawElevatorShaft(580, 100);
+        
+        // Draw player character
+        this.drawPlayer(500, 120);
+        
+        // Mine area below
+        this.ctx.fillStyle = Colors.DIRT;
+        this.ctx.fillRect(0, 150, SCREEN_WIDTH, SCREEN_HEIGHT - 150);
+        
+        // Draw some mine entrance
+        this.ctx.fillStyle = '#000000';
+        this.ctx.fillRect(580, 150, 40, 20);
+    }
+    
+    drawCloud(x, y, size) {
+        this.ctx.beginPath();
+        this.ctx.arc(x, y, size, 0, Math.PI * 2);
+        this.ctx.arc(x + size, y, size * 0.8, 0, Math.PI * 2);
+        this.ctx.arc(x + size * 1.5, y, size * 0.6, 0, Math.PI * 2);
+        this.ctx.fill();
+    }
+    
+    drawBird(x, y) {
+        this.ctx.beginPath();
+        this.ctx.moveTo(x, y);
+        this.ctx.lineTo(x + 8, y - 4);
+        this.ctx.lineTo(x + 16, y);
+        this.ctx.stroke();
+    }
+    
+    drawHouse(x, y, symbol) {
+        // House base
+        this.ctx.fillStyle = '#FFFFFF';
+        this.ctx.fillRect(x, y, 60, 40);
+        
+        // Roof
+        this.ctx.fillStyle = '#FF0000';
+        this.ctx.beginPath();
+        this.ctx.moveTo(x - 5, y);
+        this.ctx.lineTo(x + 30, y - 20);
+        this.ctx.lineTo(x + 65, y);
+        this.ctx.fill();
+        
+        // Door
+        this.ctx.fillStyle = '#8B4513';
+        this.ctx.fillRect(x + 20, y + 15, 20, 25);
+        
+        // Symbol
+        this.ctx.fillStyle = '#000000';
         this.ctx.font = '16px Arial';
-        buildings.forEach((building, i) => {
-            const x = i * 150 + 50;
-            this.ctx.fillText(building, x, 30);
-        });
-
-        // Instructions
-        this.ctx.font = '14px Arial';
-        this.ctx.fillText('Click equipment to buy, or use number keys 1-7', 10, 60);
-        this.ctx.fillText(`Money: $${player.money} | Health: ${player.health}% | Minerals: ${Object.values(player.minerals).reduce((sum, val) => sum + val, 0)}`, 10, 80);
+        this.ctx.textAlign = 'center';
+        this.ctx.fillText(symbol, x + 30, y + 25);
+        this.ctx.textAlign = 'left';
+    }
+    
+    drawElevatorShaft(x, y) {
+        // Shaft structure
+        this.ctx.fillStyle = '#808080';
+        this.ctx.fillRect(x, y, 40, 50);
+        
+        // Ribbed texture
+        this.ctx.fillStyle = '#A0A0A0';
+        for (let i = 0; i < 5; i++) {
+            this.ctx.fillRect(x, y + i * 10, 40, 2);
+        }
+        
+        // Entrance
+        this.ctx.fillStyle = '#000000';
+        this.ctx.fillRect(x + 5, y + 10, 30, 30);
+    }
+    
+    drawPlayer(x, y) {
+        // Head
+        this.ctx.fillStyle = '#FFE4C4';
+        this.ctx.fillRect(x + 8, y, 8, 8);
+        
+        // Body
+        this.ctx.fillStyle = '#FF0000';
+        this.ctx.fillRect(x + 6, y + 8, 12, 12);
+        
+        // Arms
+        this.ctx.fillStyle = '#FFE4C4';
+        this.ctx.fillRect(x + 4, y + 10, 4, 8);
+        this.ctx.fillRect(x + 16, y + 10, 4, 8);
+        
+        // Legs
+        this.ctx.fillStyle = '#0000FF';
+        this.ctx.fillRect(x + 8, y + 20, 4, 8);
+        this.ctx.fillRect(x + 12, y + 20, 4, 8);
+    }
+    
+    drawMinePlayer(x, y) {
+        // Helmet
+        this.ctx.fillStyle = '#FFD700';
+        this.ctx.fillRect(x + 4, y, 8, 4);
+        
+        // Head
+        this.ctx.fillStyle = '#FFE4C4';
+        this.ctx.fillRect(x + 4, y + 4, 8, 6);
+        
+        // Body
+        this.ctx.fillStyle = '#FFFFFF';
+        this.ctx.fillRect(x + 3, y + 10, 10, 6);
+        
+        // Arms
+        this.ctx.fillStyle = '#FFE4C4';
+        this.ctx.fillRect(x + 1, y + 11, 2, 4);
+        this.ctx.fillRect(x + 13, y + 11, 2, 4);
+        
+        // Legs
+        this.ctx.fillStyle = '#0000FF';
+        this.ctx.fillRect(x + 4, y + 16, 3, 4);
+        this.ctx.fillRect(x + 9, y + 16, 3, 4);
     }
 
     renderMine(player, mine) {
-        const visibleHeight = Math.floor((SCREEN_HEIGHT - TOWN_HEIGHT) / TILE_SIZE);
+        const visibleHeight = Math.floor(SCREEN_HEIGHT / TILE_SIZE);
         const startY = player.camera_y;
         const endY = Math.min(GRID_HEIGHT, startY + visibleHeight + 1);
 
@@ -466,7 +615,7 @@ class Renderer {
         for (let y = startY; y < endY; y++) {
             for (let x = 0; x < GRID_WIDTH; x++) {
                 const screenX = x * TILE_SIZE;
-                const screenY = (y - startY) * TILE_SIZE + TOWN_HEIGHT;
+                const screenY = (y - startY) * TILE_SIZE;
 
                 const tileType = mine.getTile(x, y);
                 const color = this.getTileColor(tileType, mine.isRevealed(x, y), player);
@@ -478,9 +627,8 @@ class Renderer {
 
         // Render player
         const px = player.position[0] * TILE_SIZE;
-        const py = (player.position[1] - startY) * TILE_SIZE + TOWN_HEIGHT;
-        this.ctx.fillStyle = Colors.PLAYER;
-        this.ctx.fillRect(px, py, TILE_SIZE, TILE_SIZE);
+        const py = (player.position[1] - startY) * TILE_SIZE;
+        this.drawMinePlayer(px, py);
     }
 
     getTileColor(tileType, revealed, player) {
@@ -496,23 +644,7 @@ class Renderer {
     }
 
     renderHUD(player, gameState) {
-        // Status bar
-        this.ctx.fillStyle = Colors.WHITE;
-        this.ctx.font = '16px Arial';
-        this.ctx.fillText(`Money: $${player.money} | Health: ${player.health}%`, 10, SCREEN_HEIGHT - 10);
-
-        // Ring indicator
-        if (player.has_ring) {
-            this.ctx.fillStyle = Colors.YELLOW;
-            this.ctx.fillText('Has Ring!', 300, SCREEN_HEIGHT - 10);
-        }
-
-        // Equipment indicator
-        if (gameState === GameState.MINE) {
-            this.ctx.fillStyle = Colors.WHITE;
-            this.ctx.font = '14px Arial';
-            this.ctx.fillText(`Equipment: ${Object.keys(player.inventory).length} items`, 500, SCREEN_HEIGHT - 10);
-        }
+        // HUD is now handled by the status panel, so we don't render anything on canvas
     }
 
     renderGameOver(victory) {
@@ -546,7 +678,7 @@ class Game {
         this.town = new TownManager();
         
         // Game state
-        this.gameState = GameState.TOWN;
+        this.gameState = GameState.MINE;
         this.running = true;
         
         // Initialize game
@@ -587,6 +719,22 @@ class Game {
         document.getElementById('modal-close').addEventListener('click', () => {
             document.getElementById('modal').classList.add('hidden');
         });
+
+        // Canvas click to show town UI when in town mode
+        this.canvas.addEventListener('click', (e) => {
+            if (this.gameState === GameState.TOWN) {
+                const rect = this.canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                // Check if clicked on elevator shaft
+                if (x >= 580 && x <= 620 && y >= 100 && y <= 150) {
+                    this.enterMine();
+                } else {
+                    document.getElementById('town-ui').classList.remove('hidden');
+                }
+            }
+        });
     }
 
     handleKeydown(e) {
@@ -619,12 +767,19 @@ class Game {
         } else if (key === 's' || key === 'S') {
             this.town.saloonInteraction(this.player, 'audience');
         } else if (key === 'e' || key === 'E') {
-            if (this.player.spendMoney(30)) {
-                this.gameState = GameState.MINE;
-                this.updateUI();
-            } else {
-                this.town.showMessage('Cannot afford!', 'You need $30 to enter the mine.');
-            }
+            this.enterMine();
+        }
+    }
+    
+    enterMine() {
+        if (this.player.spendMoney(30)) {
+            this.gameState = GameState.MINE;
+            this.player.position = [Math.floor(GRID_WIDTH / 2), 0]; // Start at top of mine
+            this.player.camera_y = 0;
+            this.player.addMessage('Entered the mine!');
+            this.updateUI();
+        } else {
+            this.town.showMessage('Cannot afford!', 'You need $30 to enter the mine.');
         }
     }
 
@@ -636,10 +791,9 @@ class Game {
         else if (key === 'ArrowUp') dy = -1;
         else if (key === 'ArrowDown') dy = 1;
         else if (key === 't' || key === 'T') {
-            this.player.position[1] = 0;
+            this.useElevator();
         } else if (key === 'Escape') {
-            this.gameState = GameState.TOWN;
-            this.updateUI();
+            this.exitMine();
         }
 
         if (dx || dy) {
@@ -647,6 +801,24 @@ class Game {
         }
 
         this.updateCamera();
+    }
+    
+    useElevator() {
+        if (this.player.position[1] === 0) {
+            // At surface, go to town
+            this.exitMine();
+        } else {
+            // In mine, go to surface
+            this.player.position[1] = 0;
+            this.player.camera_y = 0;
+            this.player.addMessage('Used elevator to surface');
+        }
+    }
+    
+    exitMine() {
+        this.gameState = GameState.TOWN;
+        this.player.addMessage('Returned to town');
+        this.updateUI();
     }
 
     handleGameOverInput(key) {
@@ -672,12 +844,7 @@ class Game {
                 this.showSaloonOptions();
                 break;
             case 'mine':
-                if (this.player.spendMoney(30)) {
-                    this.gameState = GameState.MINE;
-                    this.updateUI();
-                } else {
-                    this.town.showMessage('Cannot afford!', 'You need $30 to enter the mine.');
-                }
+                this.enterMine();
                 break;
         }
     }
@@ -810,7 +977,7 @@ class Game {
     }
 
     updateCamera() {
-        const visibleHeight = Math.floor((SCREEN_HEIGHT - TOWN_HEIGHT) / TILE_SIZE);
+        const visibleHeight = Math.floor(SCREEN_HEIGHT / TILE_SIZE);
 
         if (this.player.position[1] > this.player.camera_y + visibleHeight - 3) {
             this.player.camera_y = this.player.position[1] - visibleHeight + 3;
@@ -839,12 +1006,17 @@ class Game {
             const title = document.getElementById('game-over-title');
             title.textContent = this.gameState === GameState.VICTORY ? 'You Win!' : 'Game Over!';
         }
+
+        // Show mine UI by default when game starts
+        if (this.gameState === GameState.MINE) {
+            document.getElementById('mine-ui').classList.remove('hidden');
+        }
     }
 
     restartGame() {
         this.player = new Player();
         this.mine.generateMine();
-        this.gameState = GameState.TOWN;
+        this.gameState = GameState.MINE;
         this.player.updateUI();
         this.player.updateEquipmentUI();
         this.updateUI();

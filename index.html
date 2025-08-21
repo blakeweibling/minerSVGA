@@ -9,22 +9,65 @@
 <body>
     <div id="game-container">
         <div id="game-header">
-            <h1>MinerSVGA - Web Edition</h1>
-            <div id="status-bar">
-                <span id="money">Money: $1500</span>
-                <span id="health">Health: 100%</span>
-                <span id="minerals">Minerals: 0</span>
-                <span id="ring-status" class="hidden">Has Ring!</span>
-            </div>
+            <h1>MinerVGA</h1>
         </div>
         
         <div id="game-area">
-            <canvas id="game-canvas" width="800" height="600"></canvas>
+            <div id="game-left">
+                <canvas id="game-canvas" width="640" height="480"></canvas>
+            </div>
             
-            <div id="ui-overlay">
-                <!-- Town UI -->
-                <div id="town-ui" class="ui-panel">
-                    <h2>Town</h2>
+            <div id="game-right">
+                <div id="status-panel">
+                    <div class="status-section">
+                        <div class="status-label">PT:</div>
+                        <div class="status-value" id="platinum-count">0</div>
+                    </div>
+                    <div class="status-section">
+                        <div class="status-label">AU:</div>
+                        <div class="status-value" id="gold-count">0</div>
+                    </div>
+                    <div class="status-section">
+                        <div class="status-label">AG:</div>
+                        <div class="status-value" id="silver-count">0</div>
+                    </div>
+                    
+                    <div class="status-section">
+                        <div class="status-label">Health %</div>
+                        <div class="status-value" id="health">100</div>
+                    </div>
+                    
+                    <div class="status-section">
+                        <div class="status-label">Bank Accnt</div>
+                        <div class="status-value" id="money">$ 1,500.00</div>
+                    </div>
+                    
+                    <div class="status-section">
+                        <div class="status-label">Messages</div>
+                        <div id="messages" class="messages-area">
+                            <div class="message">Welcome to</div>
+                            <div class="message">MinerVGA!</div>
+                            <div class="message">Buy equipment</div>
+                            <div class="message">and start</div>
+                            <div class="message">mining!</div>
+                        </div>
+                    </div>
+                    
+                    <div class="status-section">
+                        <div class="status-label">You Have</div>
+                        <div id="equipment-list" class="equipment-area">
+                            <div class="equipment-item">No equipment</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="ui-overlay">
+            <!-- Town UI -->
+            <div id="town-ui" class="ui-panel">
+                <button class="close-btn" onclick="document.getElementById('town-ui').classList.add('hidden')">×</button>
+                <h2>Town</h2>
                     <div class="building-buttons">
                         <button class="building-btn" data-action="store">Store</button>
                         <button class="building-btn" data-action="bank">Bank</button>
@@ -70,10 +113,11 @@
                 
                 <!-- Mine UI -->
                 <div id="mine-ui" class="ui-panel hidden">
+                    <button class="close-btn" onclick="document.getElementById('mine-ui').classList.add('hidden')">×</button>
                     <h2>Mine</h2>
                     <div class="mine-controls">
                         <p>Use arrow keys to move and dig</p>
-                        <p>T: Teleport to surface, ESC: Return to town</p>
+                        <p>T: Use elevator, ESC: Return to town</p>
                     </div>
                     <div class="equipment-status">
                         <span id="equipment-count">Equipment: 0 items</span>
