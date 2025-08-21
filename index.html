@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MinerSVGA - Web Edition</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="game-container">
+        <div id="game-header">
+            <h1>MinerSVGA - Web Edition</h1>
+            <div id="status-bar">
+                <span id="money">Money: $1500</span>
+                <span id="health">Health: 100%</span>
+                <span id="minerals">Minerals: 0</span>
+                <span id="ring-status" class="hidden">Has Ring!</span>
+            </div>
+        </div>
+        
+        <div id="game-area">
+            <canvas id="game-canvas" width="800" height="600"></canvas>
+            
+            <div id="ui-overlay">
+                <!-- Town UI -->
+                <div id="town-ui" class="ui-panel">
+                    <h2>Town</h2>
+                    <div class="building-buttons">
+                        <button class="building-btn" data-action="store">Store</button>
+                        <button class="building-btn" data-action="bank">Bank</button>
+                        <button class="building-btn" data-action="hospital">Hospital</button>
+                        <button class="building-btn" data-action="saloon">Saloon</button>
+                        <button class="building-btn" data-action="mine">Enter Mine ($30)</button>
+                    </div>
+                    <div class="equipment-grid">
+                        <div class="equipment-item" data-equipment="shovel">
+                            <span class="equipment-name">Shovel ($100)</span>
+                            <span class="equipment-desc">Reduces dig cost by 12</span>
+                        </div>
+                        <div class="equipment-item" data-equipment="pick">
+                            <span class="equipment-name">Pick ($150)</span>
+                            <span class="equipment-desc">Reduces dig cost by 5</span>
+                        </div>
+                        <div class="equipment-item" data-equipment="drill">
+                            <span class="equipment-name">Drill ($250)</span>
+                            <span class="equipment-desc">Allows digging through granite</span>
+                        </div>
+                        <div class="equipment-item" data-equipment="lantern">
+                            <span class="equipment-name">Lantern ($300)</span>
+                            <span class="equipment-desc">Reveals unknown tiles</span>
+                        </div>
+                        <div class="equipment-item" data-equipment="bucket">
+                            <span class="equipment-name">Bucket ($200)</span>
+                            <span class="equipment-desc">Removes water tiles</span>
+                        </div>
+                        <div class="equipment-item" data-equipment="torch">
+                            <span class="equipment-name">Torch ($100)</span>
+                            <span class="equipment-desc">Helps find hidden treasures</span>
+                        </div>
+                        <div class="equipment-item" data-equipment="dynamite">
+                            <span class="equipment-name">Dynamite ($300)</span>
+                            <span class="equipment-desc">Explodes large areas</span>
+                        </div>
+                    </div>
+                    <div class="controls">
+                        <p>Click equipment to buy, or use number keys 1-7</p>
+                        <p>B: Bank, H: Heal, S: Saloon, E: Enter Mine</p>
+                    </div>
+                </div>
+                
+                <!-- Mine UI -->
+                <div id="mine-ui" class="ui-panel hidden">
+                    <h2>Mine</h2>
+                    <div class="mine-controls">
+                        <p>Use arrow keys to move and dig</p>
+                        <p>T: Teleport to surface, ESC: Return to town</p>
+                    </div>
+                    <div class="equipment-status">
+                        <span id="equipment-count">Equipment: 0 items</span>
+                    </div>
+                </div>
+                
+                <!-- Game Over UI -->
+                <div id="game-over-ui" class="ui-panel hidden">
+                    <h2 id="game-over-title">Game Over!</h2>
+                    <div class="game-over-buttons">
+                        <button id="restart-btn">Restart Game</button>
+                        <button id="quit-btn">Quit</button>
+                    </div>
+                </div>
+                
+                <!-- Modal for interactions -->
+                <div id="modal" class="modal hidden">
+                    <div class="modal-content">
+                        <h3 id="modal-title">Title</h3>
+                        <p id="modal-message">Message</p>
+                        <div id="modal-buttons"></div>
+                        <button id="modal-close">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="game.js"></script>
+</body>
+</html>
